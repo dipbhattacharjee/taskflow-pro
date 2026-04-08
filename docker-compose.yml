@@ -1,15 +1,70 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: taskflow-db
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-node
+      - backend-python
+    networks:
+      - taskflow-net
+
+  backend-node:
+    build:
+      context: ./server/backend-node
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DATABASE_URL=postgresql://taskflow:taskflow123@db:5432/taskflow
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - taskflow-net
+
+  backend-python:
+    build:
+      context: ./server/backend-python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://taskflow:taskflow123@db:5432/taskflow
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - taskflow-net
+
+  db:
+    image: postgres:16-alpine
+    restart: always
     environment:
       POSTGRES_USER: taskflow
       POSTGRES_PASSWORD: taskflow123
       POSTGRES_DB: taskflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskflow-net
+
+networks:
+  taskflow-net:
+    driver: bridge
 
 volumes:
-  postgres-data:
+  postgres_data:

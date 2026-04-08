@@ -1,0 +1,52 @@
+databases:
+  - name: taskflow-db
+    databaseName: taskflow
+    user: taskflow
+    plan: free
+
+services:
+  - type: web
+    name: taskflow-backend-node
+    runtime: docker
+    dockerfilePath: ./server/backend-node/Dockerfile
+    dockerContext: ./server/backend-node
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taskflow-db
+          property: connectionString
+
+  - type: web
+    name: taskflow-backend-python
+    runtime: docker
+    dockerfilePath: ./server/backend-python/Dockerfile
+    dockerContext: ./server/backend-python
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taskflow-db
+          property: connectionString
+
+  - type: web
+    name: taskflow-client
+    runtime: docker
+    dockerfilePath: ./client/Dockerfile
+    dockerContext: ./client
+    plan: free
+    envVars:
+      - key: REACT_APP_NODE_API
+        fromService:
+          name: taskflow-backend-node
+          type: web
+          property: host
+      - key: REACT_APP_PYTHON_API
+        fromService:
+          name: taskflow-backend-python
+          type: web
+          property: host

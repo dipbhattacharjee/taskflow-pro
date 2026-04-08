@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 import { Line, Doughnut, Bar } from "react-chartjs-2";
 
-const API_BASE = process.env.REACT_APP_API_URL || "" + API_BASE + "";
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
 ChartJS.register(
   CategoryScale,
@@ -55,7 +55,7 @@ function TaskDetailModal({ task, onClose, onUpdate, onDelete }: TaskDetailModalP
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks/${task.id}`, {
+      const res = await fetch(`${API_BASE}/tasks/${task.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ function TaskDetailModal({ task, onClose, onUpdate, onDelete }: TaskDetailModalP
   const handleDelete = async () => {
     if (!window.confirm("Delete this task?")) return;
     const token = localStorage.getItem("token");
-    await fetch(`" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks/${task.id}`, {
+    await fetch(`${API_BASE}/tasks/${task.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -257,7 +257,7 @@ export default function Analytics() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login"); return; }
-    fetch("" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks", {
+    fetch(`${API_BASE}/tasks`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())

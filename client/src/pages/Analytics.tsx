@@ -1,4 +1,3 @@
-const API_BASE = process.env.REACT_APP_API_URL || "" + API_BASE + "";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,6 +13,8 @@ import {
   Filler,
 } from "chart.js";
 import { Line, Doughnut, Bar } from "react-chartjs-2";
+
+const API_BASE = process.env.REACT_APP_API_URL || "" + API_BASE + "";
 
 ChartJS.register(
   CategoryScale,

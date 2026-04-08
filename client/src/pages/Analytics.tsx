@@ -1,3 +1,4 @@
+const API_BASE = process.env.REACT_APP_API_URL || "" + API_BASE + "";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -53,7 +54,7 @@ function TaskDetailModal({ task, onClose, onUpdate, onDelete }: TaskDetailModalP
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3001/tasks/${task.id}`, {
+      const res = await fetch(`" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks/${task.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +81,7 @@ function TaskDetailModal({ task, onClose, onUpdate, onDelete }: TaskDetailModalP
   const handleDelete = async () => {
     if (!window.confirm("Delete this task?")) return;
     const token = localStorage.getItem("token");
-    await fetch(`http://localhost:3001/tasks/${task.id}`, {
+    await fetch(`" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks/${task.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -255,7 +256,7 @@ export default function Analytics() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login"); return; }
-    fetch("http://localhost:3001/tasks", {
+    fetch("" + (process.env.REACT_APP_API_URL || "" + API_BASE + "") + "/tasks", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
